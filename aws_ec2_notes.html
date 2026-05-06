@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AWS EC2 — Complete Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --ink:#0f0f0f;
+  --ink2:#3a3a3a;
+  --ink3:#6b6b6b;
+  --paper:#faf9f6;
+  --paper2:#f2f0eb;
+  --paper3:#e8e4db;
+  --accent:#c94a1a;
+  --accent2:#1a5fc9;
+  --accent3:#1a9c5b;
+  --accent4:#c9891a;
+  --line:#d4cfc4;
+  --mono:'IBM Plex Mono',monospace;
+  --serif:'Fraunces',serif;
+  --sans:'DM Sans',sans-serif;
+}
+
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:16px;
+  line-height:1.75;
+  max-width:860px;
+  margin:0 auto;
+  padding:60px 40px 120px;
+}
+
+/* ---- TYPOGRAPHY ---- */
+h1{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:clamp(2.2rem,5vw,3.2rem);
+  line-height:1.15;
+  letter-spacing:-0.02em;
+  color:var(--ink);
+  margin-bottom:8px;
+}
+h1 span{color:var(--accent)}
+
+.subtitle{
+  font-family:var(--sans);
+  font-weight:300;
+  font-size:1.05rem;
+  color:var(--ink3);
+  margin-bottom:60px;
+  padding-bottom:40px;
+  border-bottom:1px solid var(--line);
+}
+
+h2{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:1.75rem;
+  letter-spacing:-0.01em;
+  color:var(--ink);
+  margin:64px 0 20px;
+  padding-top:40px;
+  border-top:2px solid var(--ink);
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+h2 .num{
+  font-family:var(--mono);
+  font-size:0.8rem;
+  font-weight:500;
+  background:var(--ink);
+  color:var(--paper);
+  padding:2px 8px;
+  border-radius:4px;
+  flex-shrink:0;
+}
+
+h3{
+  font-family:var(--sans);
+  font-weight:500;
+  font-size:1.1rem;
+  color:var(--ink);
+  margin:28px 0 10px;
+}
+h3::before{content:"▸ ";color:var(--accent);font-size:0.9em}
+
+p{margin-bottom:16px;color:var(--ink2);font-weight:300}
+strong{font-weight:500;color:var(--ink)}
+
+/* ---- ANALOGY BOX ---- */
+.analogy{
+  background:var(--paper2);
+  border-left:3px solid var(--accent4);
+  border-radius:0 8px 8px 0;
+  padding:16px 20px;
+  margin:20px 0;
+  font-size:0.93rem;
+}
+.analogy::before{
+  content:"🔍 Real-world analogy";
+  display:block;
+  font-family:var(--mono);
+  font-size:0.75rem;
+  font-weight:500;
+  color:var(--accent4);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+}
+
+/* ---- INFO / WARNING / SUCCESS BOXES ---- */
+.box{border-radius:8px;padding:16px 20px;margin:20px 0;font-size:0.93rem}
+.box-title{font-family:var(--mono);font-size:0.72rem;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px}
+.info{background:#e8f0fd;border-left:3px solid var(--accent2)}
+.info .box-title{color:var(--accent2)}
+.warn{background:#fef3e2;border-left:3px solid var(--accent4)}
+.warn .box-title{color:var(--accent4)}
+.success{background:#e6f7ef;border-left:3px solid var(--accent3)}
+.success .box-title{color:var(--accent3)}
+.danger{background:#fdecea;border-left:3px solid var(--accent)}
+.danger .box-title{color:var(--accent)}
+
+/* ---- CODE BLOCKS ---- */
+pre{
+  background:#1a1a1a;
+  border-radius:10px;
+  padding:20px 24px;
+  overflow-x:auto;
+  margin:16px 0 24px;
+  position:relative;
+}
+pre .label{
+  position:absolute;
+  top:10px;right:14px;
+  font-family:var(--mono);
+  font-size:0.68rem;
+  font-weight:500;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  padding:2px 8px;
+  border-radius:4px;
+}
+pre .label-console{background:#3a2800;color:#c9891a}
+pre .label-terminal{background:#002a12;color:#2dbe6c}
+pre .label-file{background:#001a3a;color:#5a9cf5}
+
+code{font-family:var(--mono);font-size:0.88rem;line-height:1.7}
+pre code{color:#e2e2e2}
+.cm{color:#6b7280}  /* comment */
+.ck{color:#c084fc}  /* keyword */
+.cs{color:#86efac}  /* string */
+.cn{color:#67e8f9}  /* command */
+.ca{color:#fbbf24}  /* arg/flag */
+.ce{color:#f87171}  /* error/important */
+.cg{color:#4ade80}  /* good/output */
+
+/* inline code */
+:not(pre)>code{
+  background:var(--paper3);
+  color:var(--accent);
+  padding:2px 6px;
+  border-radius:4px;
+  font-size:0.85em;
+}
+
+/* ---- STEP LIST ---- */
+.steps{list-style:none;margin:20px 0;counter-reset:step}
+.steps li{
+  counter-increment:step;
+  position:relative;
+  padding:14px 14px 14px 52px;
+  margin-bottom:10px;
+  background:var(--paper2);
+  border-radius:8px;
+  font-size:0.95rem;
+  color:var(--ink2);
+  border:1px solid var(--line);
+}
+.steps li::before{
+  content:counter(step);
+  position:absolute;left:16px;top:50%;
+  transform:translateY(-50%);
+  width:26px;height:26px;
+  background:var(--ink);
+  color:var(--paper);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:0.75rem;font-weight:500;
+}
+
+/* ---- TERM TABLE ---- */
+.term-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.9rem}
+.term-table th{
+  text-align:left;padding:10px 14px;
+  background:var(--ink);color:var(--paper);
+  font-family:var(--mono);font-size:0.78rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:0.06em;
+}
+.term-table th:first-child{border-radius:6px 0 0 0}
+.term-table th:last-child{border-radius:0 6px 0 0}
+.term-table td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+.term-table tr:last-child td{border-bottom:none}
+.term-table tr:nth-child(even) td{background:var(--paper2)}
+.term-table td:first-child{font-family:var(--mono);font-size:0.82rem;color:var(--accent2);font-weight:500;white-space:nowrap}
+
+/* ---- DIVIDER ---- */
+.divider{height:1px;background:var(--line);margin:48px 0}
+
+/* ---- TOC ---- */
+.toc{
+  background:var(--paper2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:24px 28px;
+  margin:40px 0 60px;
+}
+.toc h4{
+  font-family:var(--mono);font-size:0.78rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:0.1em;
+  color:var(--ink3);margin-bottom:12px;
+}
+.toc ol{padding-left:20px}
+.toc li{margin-bottom:6px;font-size:0.93rem}
+.toc a{color:var(--accent2);text-decoration:none;font-weight:400}
+.toc a:hover{text-decoration:underline}
+
+/* ---- HIGHLIGHT ---- */
+mark{background:#fff3c4;color:var(--ink);padding:1px 3px;border-radius:2px}
+
+/* ---- PRINT ---- */
+@media print{
+  body{padding:20px;font-size:14px}
+  pre{font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<h1>AWS EC2 &amp;<br><span>Deploying FastAPI</span></h1>
+<p class="subtitle">Complete beginner notes — theory, analogies, and every command explained line by line.</p>
+
+<div class="toc">
+  <h4>Table of Contents</h4>
+  <ol>
+    <li><a href="#cloud">What is Cloud Computing?</a></li>
+    <li><a href="#aws">What is AWS?</a></li>
+    <li><a href="#ec2">What is EC2?</a></li>
+    <li><a href="#concepts">6 Core Concepts Explained Deeply</a></li>
+    <li><a href="#docker">How Docker Works (Quick Recap)</a></li>
+    <li><a href="#flow">The Full Picture — How Everything Connects</a></li>
+    <li><a href="#deploy">Step-by-Step Deployment Guide</a></li>
+    <li><a href="#bugs">Bugs Found in Your Code</a></li>
+    <li><a href="#cheatsheet">Command Cheat Sheet</a></li>
+  </ol>
+</div>
+
+<!-- ======================== SECTION 1 ======================== -->
+<h2 id="cloud"><span class="num">01</span> What is Cloud Computing?</h2>
+
+<p>Before understanding AWS, you must understand what "the cloud" actually means — because it's not magical.</p>
+
+<p><strong>Cloud computing simply means: renting someone else's computer over the internet.</strong></p>
+
+<p>That's it. Amazon, Google, and Microsoft own massive data centers with hundreds of thousands of physical computers. They rent out pieces of those computers to people like you and me. You pay by the hour, like renting a car instead of buying one.</p>
+
+<div class="analogy">
+Imagine you need a shop to sell something. You have two choices:<br><br>
+<strong>Option A (Traditional):</strong> Buy land, build a shop, buy electricity, hire security, maintain the building forever. Very expensive upfront. Takes months.<br><br>
+<strong>Option B (Cloud):</strong> Rent a space in a mall. Pay monthly. Mall handles electricity, security, cleaning. You can get a bigger/smaller shop in 5 minutes. Start in a day.<br><br>
+The mall = AWS. Your shop = your EC2 server. You just rent the space.
+</div>
+
+<p><strong>Why is this better than running your own server at home?</strong></p>
+<ul style="margin:0 0 16px 20px;color:var(--ink2);font-weight:300">
+  <li style="margin-bottom:8px">Your home internet goes down → your app dies. AWS has 99.99% uptime.</li>
+  <li style="margin-bottom:8px">Your home computer crashes → you lose data. AWS has automatic backups.</li>
+  <li style="margin-bottom:8px">1000 users hit your app → your home PC can't handle it. AWS can scale in seconds.</li>
+  <li style="margin-bottom:8px">Your home IP changes every day. AWS gives you a fixed public IP.</li>
+</ul>
+
+<!-- ======================== SECTION 2 ======================== -->
+<h2 id="aws"><span class="num">02</span> What is AWS?</h2>
+
+<p>AWS = <strong>Amazon Web Services</strong>. It is Amazon's cloud platform. Launched in 2006, it is the largest cloud provider in the world. More than 33% of the internet runs on AWS — Netflix, Airbnb, NASA, NASA, even the CIA use AWS.</p>
+
+<p>AWS has over 200 services. You don't need to know all of them. For a beginner deploying a FastAPI app, you only need these 5:</p>
+
+<table class="term-table">
+  <tr><th>AWS Service</th><th>What It Does</th><th>Analogy</th></tr>
+  <tr><td>EC2</td><td>Virtual computer/server</td><td>The actual shop space you rent</td></tr>
+  <tr><td>S3</td><td>File storage (like Google Drive)</td><td>A warehouse to store files</td></tr>
+  <tr><td>RDS</td><td>Managed database (PostgreSQL/MySQL)</td><td>A managed filing cabinet</td></tr>
+  <tr><td>Route53</td><td>Domain name management (DNS)</td><td>The address/signboard of your shop</td></tr>
+  <tr><td>Elastic IP</td><td>Permanent public IP address</td><td>A permanent phone number</td></tr>
+</table>
+
+<p>For now, you only need <strong>EC2</strong> and <strong>Elastic IP</strong>. That's it.</p>
+
+<!-- ======================== SECTION 3 ======================== -->
+<h2 id="ec2"><span class="num">03</span> What is EC2?</h2>
+
+<p>EC2 = <strong>Elastic Compute Cloud</strong>. It is a virtual machine (VM) that runs in Amazon's data center. When you "launch an EC2 instance," Amazon creates a virtual computer for you. This computer has:</p>
+
+<ul style="margin:0 0 16px 20px;color:var(--ink2);font-weight:300">
+  <li style="margin-bottom:6px">A CPU (how fast it can compute)</li>
+  <li style="margin-bottom:6px">RAM (how much it can hold in memory)</li>
+  <li style="margin-bottom:6px">Storage/Disk (how much data it can store permanently)</li>
+  <li style="margin-bottom:6px">A public IP address (so the internet can reach it)</li>
+  <li style="margin-bottom:6px">An operating system (Ubuntu Linux, in our case)</li>
+</ul>
+
+<div class="analogy">
+Your laptop is a computer. EC2 is also a computer — it just lives in Amazon's building in Mumbai instead of on your table. The only difference: you can't physically touch it. You control it entirely through your terminal by typing commands over SSH (Secure Shell). SSH is like a remote control for a computer.
+</div>
+
+<h3>What does "Elastic" mean?</h3>
+<p>It means you can resize it. If you start with a small server (1 CPU, 1GB RAM) and your app gets popular, you click a button and upgrade to 8 CPUs and 32GB RAM — in 2 minutes. You can also shrink it back. That flexibility is "elastic." No physical hardware to buy.</p>
+
+<h3>What is an Instance?</h3>
+<p>Each running EC2 virtual machine is called an <strong>instance</strong>. You can run 1 instance or 100 instances. Each instance is completely separate — its own OS, its own IP, its own data. Think of each instance as a separate computer.</p>
+
+<h3>Instance Types — t2.micro, t3.medium, etc.</h3>
+<p>EC2 has hundreds of instance types. The name tells you its power. For beginners, use <code>t2.micro</code>:</p>
+
+<table class="term-table">
+  <tr><th>Instance Type</th><th>vCPU</th><th>RAM</th><th>Use Case</th><th>Cost/month</th></tr>
+  <tr><td>t2.micro</td><td>1</td><td>1 GB</td><td>Learning, small apps</td><td>Free (first year)</td></tr>
+  <tr><td>t3.small</td><td>2</td><td>2 GB</td><td>Small production apps</td><td>~$15</td></tr>
+  <tr><td>t3.medium</td><td>2</td><td>4 GB</td><td>Medium apps, teams</td><td>~$30</td></tr>
+  <tr><td>t3.large</td><td>2</td><td>8 GB</td><td>Multiple services</td><td>~$60</td></tr>
+</table>
+
+<div class="success">
+  <div class="box-title">✓ Free Tier</div>
+  New AWS accounts get <strong>750 hours/month free</strong> of t2.micro for 12 months. That's enough to run 1 server 24/7 for free for an entire year. Always pick t2.micro when learning.
+</div>
+
+<!-- ======================== SECTION 4 ======================== -->
+<h2 id="concepts"><span class="num">04</span> 6 Core Concepts — Explained Deeply</h2>
+
+<h3>Concept 1 — AMI (Amazon Machine Image)</h3>
+<p>When you launch an EC2 instance, the first question is: <em>what operating system should it have?</em> You pick this using an <strong>AMI</strong>.</p>
+
+<p>An AMI is a frozen snapshot of a fully-configured operating system. AWS has thousands of public AMIs. When you select one, your EC2 instance boots with that OS already installed and ready — just like buying a laptop that already has Windows installed.</p>
+
+<div class="analogy">
+Imagine buying a brand new hard drive. You can install an OS from scratch (takes 2 hours), OR you can clone it from a pre-configured template that already has everything set up (takes 30 seconds). An AMI is that template.
+</div>
+
+<p>For your FastAPI app, choose: <mark>Ubuntu Server 22.04 LTS (HVM), SSD Volume Type</mark> — it's free tier eligible and widely used.</p>
+
+<p><strong>LTS</strong> = Long Term Support. Ubuntu promises security updates for 5 years. Never use non-LTS versions on a server.</p>
+
+<div class="divider"></div>
+
+<h3>Concept 2 — Security Group (The Firewall)</h3>
+<p>This is the <strong>most important concept for beginners</strong> because most people's deployments fail because of Security Groups.</p>
+
+<p>A Security Group is a virtual firewall. By default, <mark>ALL incoming traffic to your EC2 is BLOCKED</mark>. Nobody can reach your server — not even you. You must manually add rules to open specific ports.</p>
+
+<p><strong>What is a Port?</strong></p>
+<p>Ports are like different doors of a building. Your server is the building. Each service inside the server listens on a specific door (port number). When someone wants to talk to that service, they knock on that door.</p>
+
+<table class="term-table">
+  <tr><th>Port</th><th>Service</th><th>Who knocks on this door?</th></tr>
+  <tr><td>22</td><td>SSH</td><td>You, from your terminal, to control the server</td></tr>
+  <tr><td>80</td><td>HTTP</td><td>Browsers, when visiting http://yoursite.com</td></tr>
+  <tr><td>443</td><td>HTTPS</td><td>Browsers, when visiting https://yoursite.com</td></tr>
+  <tr><td>8000</td><td>FastAPI (uvicorn)</td><td>Anyone testing your API directly</td></tr>
+  <tr><td>5432</td><td>PostgreSQL</td><td>Your app, connecting to the database</td></tr>
+</table>
+
+<p>When you create a Security Group, you add <strong>Inbound Rules</strong>:</p>
+
+<pre><code><span class="cm"># Example Security Group Inbound Rules for your FastAPI server:</span>
+
+Type         Protocol  Port   Source
+------       --------  -----  ------------------
+SSH          TCP       22     My IP (only your computer)
+HTTP         TCP       80     Anywhere (0.0.0.0/0)
+HTTPS        TCP       443    Anywhere (0.0.0.0/0)
+Custom TCP   TCP       8000   Anywhere (0.0.0.0/0)
+
+<span class="cm"># "Anywhere" means anyone on the internet can reach that port.
+# "My IP" means ONLY your specific home/office IP can reach that port.
+# Always restrict SSH to "My IP" — never open port 22 to everyone.</span></code></pre>
+
+<div class="danger">
+  <div class="box-title">⚠ Critical Security Warning</div>
+  Never set SSH (port 22) source to "Anywhere (0.0.0.0/0)". Hackers constantly scan the internet for open port 22 and try to brute-force access. Always set SSH to <strong>"My IP"</strong> only.
+</div>
+
+<div class="divider"></div>
+
+<h3>Concept 3 — Key Pair (How You Log In)</h3>
+<p>Your EC2 server has no screen, no keyboard, no monitor. You can't physically touch it. The only way to access it is through your terminal using a protocol called <strong>SSH (Secure Shell)</strong>.</p>
+
+<p>But you need to prove you're the owner before the server lets you in. AWS doesn't use passwords for this (passwords can be guessed). Instead it uses <strong>cryptographic key pairs</strong>.</p>
+
+<p>AWS generates two mathematically-linked keys:</p>
+
+<ul style="margin:0 0 16px 20px;color:var(--ink2);font-weight:300">
+  <li style="margin-bottom:10px"><strong>Public Key</strong> — AWS keeps this on your server. It's like a padlock.</li>
+  <li style="margin-bottom:10px"><strong>Private Key</strong> — You download this as a <code>.pem</code> file. It's the key that opens the padlock. Only someone with this file can log in.</li>
+</ul>
+
+<div class="analogy">
+Imagine a diary with a padlock (public key). Only the matching key (private key = your .pem file) can open that padlock. Amazon puts the padlock on your server. You keep the key. When you SSH in, your computer shows the server the key, the server checks it matches the padlock, and lets you in.
+</div>
+
+<div class="danger">
+  <div class="box-title">⚠ You can NEVER download the .pem file again after the first time</div>
+  Once you close the download dialog, the private key is gone from AWS forever. If you lose your .pem file, you cannot SSH into your server ever again. You'd have to create a new server. Save it in 2 places (your laptop + Google Drive).
+</div>
+
+<p><strong>Why does the .pem file need chmod 400?</strong></p>
+<p>When you run <code>chmod 400 yourkey.pem</code>, you're setting the file permission so <em>only you</em> can read it. SSH refuses to work if your key file is readable by other users on your computer — it's a security protection. <code>chmod 400</code> = Owner can read, nobody else can do anything.</p>
+
+<pre><code><span class="cn">chmod</span> <span class="ca">400</span> ~/Downloads/fastapi-key.pem
+
+<span class="cm"># chmod = change mode (change file permissions)
+# 4 = read permission
+# 00 = no permission for group, no permission for others
+# So: only you can read this file. Nobody else.</span></code></pre>
+
+<div class="divider"></div>
+
+<h3>Concept 4 — Elastic IP (Permanent Public IP)</h3>
+<p>Every EC2 instance gets a public IP address when it starts. <strong>But by default, this IP changes every time you stop and start the server.</strong></p>
+
+<p>This is a huge problem:</p>
+<ul style="margin:0 0 16px 20px;color:var(--ink2);font-weight:300">
+  <li style="margin-bottom:6px">You tell someone your API is at <code>http://65.0.12.34:8000</code></li>
+  <li style="margin-bottom:6px">You stop the server at night (to save money)</li>
+  <li style="margin-bottom:6px">Next morning you start it again → it gets a new IP: <code>http://65.0.78.99:8000</code></li>
+  <li style="margin-bottom:6px">The old URL is now broken. Everyone loses access.</li>
+</ul>
+
+<p>An <strong>Elastic IP</strong> is a static (fixed) public IP address that you own. You associate it with your EC2 instance. Now no matter how many times you stop/start the server, the IP never changes.</p>
+
+<div class="analogy">
+Think of a regular IP like a temporary phone number that changes every month. An Elastic IP is like a permanent number you own forever. You can even detach it from one phone and attach it to another.
+</div>
+
+<div class="warn">
+  <div class="box-title">💡 Elastic IP Cost Warning</div>
+  Elastic IPs are FREE as long as they are attached to a running EC2 instance. But if your server is STOPPED and the Elastic IP is idle (not used), AWS charges you ~$0.005/hour (~$3.60/month). To avoid charges: either keep your instance running, or release the Elastic IP when not in use.
+</div>
+
+<div class="divider"></div>
+
+<h3>Concept 5 — VPC and Subnets</h3>
+<p>VPC = <strong>Virtual Private Cloud</strong>. It is a private, isolated section of the AWS network that belongs to you.</p>
+
+<p>Think of AWS as a giant apartment building. A VPC is your private apartment — nobody else can enter unless you invite them. All your EC2 instances, databases, and other services live inside your VPC.</p>
+
+<p>A <strong>Subnet</strong> is a smaller section inside the VPC — like rooms inside your apartment.</p>
+
+<ul style="margin:0 0 16px 20px;color:var(--ink2);font-weight:300">
+  <li style="margin-bottom:8px"><strong>Public Subnet</strong> — has a route to the internet. EC2 instances here can be accessed from outside.</li>
+  <li style="margin-bottom:8px"><strong>Private Subnet</strong> — NO route to the internet. Used for databases — you never want your database directly accessible from the internet.</li>
+</ul>
+
+<div class="info">
+  <div class="box-title">ℹ Good news for beginners</div>
+  AWS automatically creates a default VPC with public subnets in every region for new accounts. You don't need to configure anything. Just use the default VPC when launching EC2. You'll learn custom VPCs when building more complex, production systems.
+</div>
+
+<div class="divider"></div>
+
+<h3>Concept 6 — Regions and Availability Zones</h3>
+<p>AWS has <strong>physical data centers</strong> around the world. These are grouped into:</p>
+
+<p><strong>Regions</strong> — A geographic location (e.g., Mumbai, Virginia, Frankfurt). Each region is completely independent. If one entire region goes down (rare), others are unaffected. Pick the region closest to your users for lowest latency.</p>
+
+<p><strong>Availability Zones (AZs)</strong> — Multiple isolated data centers within one region (e.g., Mumbai has 3 AZs: ap-south-1a, ap-south-1b, ap-south-1c). If one building catches fire, the others keep running.</p>
+
+<p>For a beginner from India: use <mark>ap-south-1 (Mumbai)</mark>. It's the closest and cheapest for Indian users.</p>
+
+<!-- ======================== SECTION 5 ======================== -->
+<h2 id="docker"><span class="num">05</span> How Docker Fits In</h2>
+
+<p>You already have a Dockerfile in your project. Let's understand what it does and why it matters on EC2.</p>
+
+<h3>Why Docker?</h3>
+<p>The classic developer problem: <em>"It works on my machine!"</em></p>
+<p>Your laptop has Python 3.10, specific library versions, and specific settings. Your EC2 server is a fresh Ubuntu with nothing installed. If you just copy your code and run it, it will fail because of missing dependencies.</p>
+
+<div class="analogy">
+Imagine packing for a trip. Instead of writing "bring these 47 specific items," you just bring your entire room — the exact environment you need. Docker containers are that "packed room." The container includes your app, Python, all libraries, config — everything. It runs identically everywhere.
+</div>
+
+<h3>Your Dockerfile — Line by Line Explained</h3>
+
+<p>Here is your Dockerfile with every line explained:</p>
+
+<pre><code><span class="ck">FROM</span> <span class="cs">python:3.10-slim</span>
+<span class="cm"># This is the base image. Think of it as a pre-built foundation.
+# python:3.10-slim = a minimal Linux OS with Python 3.10 already installed.
+# "slim" means it stripped out unnecessary packages → smaller image = faster deployment.
+# Without this, you'd need to install Python yourself.</span>
+
+<span class="ck">WORKDIR</span> <span class="cs">/app</span>
+<span class="cm"># Sets the working directory INSIDE the container.
+# All subsequent commands run from this folder.
+# Like typing "cd /app" — creates the folder if it doesn't exist.
+# Your project files will live at /app/ inside the container.</span>
+
+<span class="ck">COPY</span> <span class="cs">requirements.txt .</span>
+<span class="cm"># Copies requirements.txt from your local machine INTO the container's /app/ folder.
+# The "." at the end means "current directory" (which is /app because of WORKDIR).
+# We copy ONLY requirements.txt first (not all code) for Docker caching optimization:
+# If you change your code but not your requirements, Docker reuses the pip install layer.
+# This saves minutes during repeated builds.</span>
+
+<span class="ck">RUN</span> <span class="cs">pip install --no-cache-dir -r requirements.txt</span>
+<span class="cm"># RUN executes a command during the build process (not at runtime).
+# pip install = installs all Python packages listed in requirements.txt
+# --no-cache-dir = don't save pip's download cache inside the image.
+#                  Keeps the image smaller. Cache in a container is useless anyway.
+# -r requirements.txt = read the list of packages from this file.</span>
+
+<span class="ck">COPY</span> <span class="cs">. .</span>
+<span class="cm"># Copies EVERYTHING from your local project folder into the container's /app/ folder.
+# First "." = source (your local project)
+# Second "." = destination (container's current directory = /app)
+# This copies main.py/app.py, the SQLite db config, and all other files.</span>
+
+<span class="ck">CMD</span> <span class="cs">["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]</span>
+<span class="cm"># CMD is the command that runs when the container STARTS (not during build).
+# uvicorn = the ASGI web server that runs your FastAPI app.
+# "app:app" = filename:variable — your file is app.py and FastAPI instance is named app.
+# --host 0.0.0.0 = CRITICAL! Means "listen on ALL network interfaces."
+#   Without this, FastAPI listens only on 127.0.0.1 (localhost inside container).
+#   Docker port mapping can't reach it. Your app would be invisible even on the same machine!
+# --port 8000 = listen on port 8000 inside the container.</span></code></pre>
+
+<div class="warn">
+  <div class="box-title">⚠ Bug in Your Original Dockerfile</div>
+  Your original Dockerfile had two bugs:<br><br>
+  1. <code>requiremnts.txt</code> → missing letter 'e' → should be <code>requirements.txt</code><br>
+  2. <code>main:app</code> → your file is named <code>app.py</code>, not <code>main.py</code> → should be <code>app:app</code>
+</div>
+
+<h3>Docker Run Command — Explained</h3>
+<pre><code><span class="cn">docker run</span> <span class="ca">-d</span> <span class="ca">--name</span> <span class="cs">fastapi-container</span> <span class="ca">-p</span> <span class="cs">8000:8000</span> <span class="ca">--restart always</span> <span class="cs">fastapi-app</span>
+
+<span class="cm"># docker run = create and start a new container from an image
+# -d = detached mode. Runs in the background. Without this, the container runs in
+#      your terminal and stops when you close the terminal.
+# --name fastapi-container = give the container a human-readable name.
+#   Without this, Docker assigns a random name like "happy_curie". Naming makes management easier.
+# -p 8000:8000 = port mapping. Format is HOST_PORT:CONTAINER_PORT.
+#   Left 8000 = port on the EC2 server (the outside world).
+#   Right 8000 = port inside the container.
+#   This says: "Forward all traffic coming to EC2's port 8000 into the container's port 8000."
+#   You could do -p 80:8000 — then http://yourip (no port needed) would reach FastAPI!
+# --restart always = if the container crashes or the server reboots, restart automatically.
+#   This keeps your app alive 24/7 without manual intervention.
+# fastapi-app = the name of the image to run (what you named it in docker build -t fastapi-app .)</span></code></pre>
+
+<!-- ======================== SECTION 6 ======================== -->
+<h2 id="flow"><span class="num">06</span> The Full Picture — How Everything Connects</h2>
+
+<p>Here is the complete journey of a request from a user to your FastAPI app:</p>
+
+<pre><code><span class="cg">User's browser</span>
+    │
+    │  types: http://65.0.12.34:8000/api/v1/login
+    │
+    ▼
+<span class="ca">Internet</span>
+    │
+    │  traffic reaches AWS network
+    │
+    ▼
+<span class="cn">Elastic IP</span>  (65.0.12.34 — your permanent IP)
+    │
+    │  resolves to your EC2 instance
+    │
+    ▼
+<span class="ck">Security Group</span>  (firewall check)
+    │  ✓  Port 8000 is in the allowed inbound rules
+    │  ✗  Port 3000 would be BLOCKED here (no rule for it)
+    │
+    ▼
+<span class="cs">EC2 Instance</span>  (Ubuntu Linux server)
+    │
+    │  Docker receives the request on port 8000
+    │  Port mapping -p 8000:8000 forwards it inside the container
+    │
+    ▼
+<span class="cg">Docker Container</span>
+    │
+    │  Uvicorn (web server) receives the request
+    │  Routes it to FastAPI
+    │
+    ▼
+<span class="cn">FastAPI app</span>  (your app.py)
+    │
+    │  /api/v1/login endpoint runs
+    │  Queries SQLite database (app.db)
+    │  Returns JWT token
+    │
+    ▼
+<span class="cg">Response travels back</span> → Container → EC2 → Internet → User's browser</code></pre>
+
+<!-- ======================== SECTION 7 ======================== -->
+<h2 id="deploy"><span class="num">07</span> Step-by-Step Deployment Guide</h2>
+
+<h3>Step 1 — Launch EC2 Instance (AWS Console)</h3>
+<p>Go to: <strong>AWS Console → EC2 → Launch Instance</strong></p>
+<pre><code><span class="ca">Name:</span>           <span class="cs">my-fastapi-server</span>
+<span class="ca">AMI:</span>            <span class="cs">Ubuntu Server 22.04 LTS  ← search and select this</span>
+<span class="ca">Instance type:</span>  <span class="cs">t2.micro  ← Free tier eligible</span>
+<span class="ca">Key pair:</span>       <span class="cs">→ Click "Create new key pair"</span>
+                <span class="cs">→ Name: fastapi-key</span>
+                <span class="cs">→ Type: RSA</span>
+                <span class="cs">→ Format: .pem</span>
+                <span class="cs">→ Click Create  ← FILE DOWNLOADS AUTOMATICALLY. SAVE IT!</span>
+<span class="ca">Security Group:</span> <span class="cs">→ Create new</span>
+                <span class="cs">→ Add rule: SSH, Port 22, My IP</span>
+                <span class="cs">→ Add rule: HTTP, Port 80, Anywhere</span>
+                <span class="cs">→ Add rule: Custom TCP, Port 8000, Anywhere</span>
+<span class="ca">Storage:</span>        <span class="cs">20 GB  ← change from default 8 GB</span>
+
+<span class="cm">→ Click "Launch Instance"
+→ Wait 1-2 minutes for it to start
+→ Go to EC2 → Instances → you'll see your server with "Running" status</span></code></pre>
+
+<h3>Step 2 — Get an Elastic IP</h3>
+<pre><code><span class="cm"># In AWS Console:
+# 1. Left sidebar → Network &amp; Security → Elastic IPs
+# 2. Click "Allocate Elastic IP address"
+# 3. Leave all defaults → Click "Allocate"
+# 4. Select the new IP → Actions → "Associate Elastic IP address"
+# 5. Instance: select your EC2 → Click "Associate"
+# Now copy this IP address — you'll use it in every command below.</span></code></pre>
+
+<h3>Step 3 — SSH Into Your Server</h3>
+<p>Open your terminal. Do this <strong>from your local computer</strong>, not inside AWS console.</p>
+<pre><code><span class="cm"># For Mac / Linux:</span>
+<span class="cn">chmod</span> <span class="ca">400</span> ~/Downloads/fastapi-key.pem
+
+<span class="cn">ssh</span> <span class="ca">-i</span> ~/Downloads/fastapi-key.pem ubuntu@<span class="ce">YOUR_ELASTIC_IP</span>
+
+<span class="cm"># For Windows (Git Bash or WSL):
+# Move fastapi-key.pem to C:\Users\YourName\
+# Then run:</span>
+<span class="cn">ssh</span> <span class="ca">-i</span> /c/Users/YourName/fastapi-key.pem ubuntu@<span class="ce">YOUR_ELASTIC_IP</span>
+
+<span class="cm"># First time: it asks "Are you sure you want to continue connecting? (yes/no)"
+# Type: yes  → press Enter
+# You're in! You'll see the Ubuntu prompt:
+# ubuntu@ip-172-xx-xx-xx:~$</span></code></pre>
+
+<div class="info">
+  <div class="box-title">ℹ Why "ubuntu"?</div>
+  The default username for Ubuntu AMI is <code>ubuntu</code>. For Amazon Linux AMI it would be <code>ec2-user</code>. Always use <code>ubuntu</code> for Ubuntu servers.
+</div>
+
+<h3>Step 4 — Install Docker on EC2</h3>
+<p>You are now inside your EC2. Run these commands:</p>
+<pre><code><span class="cm"># Update package lists (always do this first on a fresh server)</span>
+<span class="cn">sudo apt-get update</span> <span class="ca">-y</span>
+
+<span class="cm"># Install prerequisites</span>
+<span class="cn">sudo apt-get install</span> <span class="ca">-y</span> ca-certificates curl
+
+<span class="cm"># Add Docker's signing key (security verification)</span>
+<span class="cn">sudo install</span> <span class="ca">-m 0755 -d</span> /etc/apt/keyrings
+<span class="cn">sudo curl</span> <span class="ca">-fsSL</span> https://download.docker.com/linux/ubuntu/gpg <span class="ca">-o</span> /etc/apt/keyrings/docker.asc
+<span class="cn">sudo chmod</span> a+r /etc/apt/keyrings/docker.asc
+
+<span class="cm"># Add Docker's official repository to apt sources</span>
+<span class="cn">echo</span> <span class="cs">"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
+  https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable"</span> | \
+  <span class="cn">sudo tee</span> /etc/apt/sources.list.d/docker.list <span class="ca">></span> /dev/null
+
+<span class="cm"># Install Docker</span>
+<span class="cn">sudo apt-get update</span> <span class="ca">-y</span>
+<span class="cn">sudo apt-get install</span> <span class="ca">-y</span> docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+<span class="cm"># Add yourself to docker group (avoid typing "sudo" before every docker command)</span>
+<span class="cn">sudo usermod</span> <span class="ca">-aG</span> docker ubuntu
+
+<span class="cm"># Apply group change immediately (or log out and log back in)</span>
+<span class="cn">newgrp</span> docker
+
+<span class="cm"># Verify Docker works</span>
+<span class="cn">docker</span> --version
+<span class="cg"># Expected output: Docker version 24.x.x</span></code></pre>
+
+<h3>Step 5 — Upload Your Project to EC2</h3>
+<p>Open a <strong>new terminal tab</strong> on your local machine (don't close the SSH one). We use <code>scp</code> (Secure Copy) to transfer files over SSH.</p>
+<pre><code><span class="cm"># scp = secure copy. Works exactly like cp but over SSH.
+# Format: scp -i keyfile source destination
+# For a folder, add -r (recursive)</span>
+
+<span class="cn">scp</span> <span class="ca">-i</span> ~/Downloads/fastapi-key.pem <span class="ca">-r</span> ./employee-api ubuntu@<span class="ce">YOUR_ELASTIC_IP</span>:/home/ubuntu/app
+
+<span class="cm"># ./employee-api = your local project folder path
+# ubuntu@YOUR_IP:/home/ubuntu/app = destination on the server
+# This creates /home/ubuntu/app/ on your EC2 with all your files inside</span>
+
+<span class="cm"># Or using git (easier for future updates):</span>
+<span class="cm"># First, push your code to GitHub. Then on the EC2:</span>
+<span class="cn">sudo apt install</span> <span class="ca">-y</span> git
+<span class="cn">git clone</span> https://github.com/yourusername/your-repo.git /home/ubuntu/app</code></pre>
+
+<h3>Step 6 — Fix Your Dockerfile and Build</h3>
+<p>Go back to your SSH terminal (inside EC2):</p>
+<pre><code><span class="cm"># Navigate to the uploaded folder</span>
+<span class="cn">cd</span> /home/ubuntu/app
+
+<span class="cm"># List files to confirm everything is there</span>
+<span class="cn">ls</span> <span class="ca">-la</span>
+<span class="cg"># Should show: app.py  Dockerfile  requirements.txt</span>
+
+<span class="cm"># Edit the Dockerfile to fix the two bugs</span>
+<span class="cn">nano</span> Dockerfile
+<span class="cm"># Change "requiremnts.txt" → "requirements.txt"
+# Change "main:app" → "app:app"
+# To save: Ctrl+X → press Y → press Enter</span>
+
+<span class="cm"># Build the Docker image
+# -t fastapi-app = tag (name) the image "fastapi-app"
+# . = build context is current directory (looks for Dockerfile here)</span>
+<span class="cn">docker build</span> <span class="ca">-t</span> fastapi-app .
+<span class="cg"># You'll see output like:
+# Step 1/5 : FROM python:3.10-slim
+# Step 2/5 : WORKDIR /app
+# ...
+# Successfully built abc123def456
+# Successfully tagged fastapi-app:latest</span>
+
+<span class="cm"># Run the container</span>
+<span class="cn">docker run</span> <span class="ca">-d</span> <span class="ca">--name</span> fastapi-container <span class="ca">-p</span> 8000:8000 <span class="ca">--restart always</span> fastapi-app
+
+<span class="cm"># Verify it's running</span>
+<span class="cn">docker ps</span>
+<span class="cg"># Should show:
+# CONTAINER ID  IMAGE        COMMAND         STATUS         PORTS
+# a3f2b1c4d5e6  fastapi-app  "uvicorn..."    Up 30 seconds  0.0.0.0:8000->8000/tcp</span></code></pre>
+
+<h3>Step 7 — Test Your Live API</h3>
+<pre><code><span class="cm"># Option 1: Test from inside EC2 (curl)</span>
+<span class="cn">curl</span> http://localhost:8000/docs
+<span class="cg"># Should return HTML of FastAPI docs page</span>
+
+<span class="cm"># Option 2: Open in your browser
+# Type this in Chrome/Firefox/Edge:</span>
+http://<span class="ce">YOUR_ELASTIC_IP</span>:8000/docs
+
+<span class="cg"># You should see the FastAPI Swagger UI — interactive documentation.
+# Try the /api/v1/register endpoint right there in the browser!</span></code></pre>
+
+<!-- ======================== SECTION 8 ======================== -->
+<h2 id="bugs"><span class="num">08</span> Bugs in Your Code — Fixed</h2>
+
+<h3>Bug 1 — Dockerfile Filename Typo</h3>
+<pre><code><span class="ce"># ORIGINAL (broken):</span>
+COPY <span class="ce">requiremnts</span>.txt .
+
+<span class="cg"># FIXED:</span>
+COPY <span class="cg">requirements</span>.txt .</code></pre>
+<p>When Docker runs <code>COPY requiremnts.txt .</code>, it looks for a file literally named <code>requiremnts.txt</code> in your project. It doesn't exist. Build fails with "COPY failed: file not found".</p>
+
+<h3>Bug 2 — Wrong Module Name in CMD</h3>
+<pre><code><span class="ce"># ORIGINAL (broken):</span>
+CMD ["uvicorn", <span class="ce">"main:app"</span>, "--host", "0.0.0.0", "--port", "8000"]
+
+<span class="cg"># FIXED:</span>
+CMD ["uvicorn", <span class="cg">"app:app"</span>, "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+<p>Uvicorn's format is <code>"filename:variable"</code>. Your Python file is named <code>app.py</code> and your FastAPI instance is created as <code>app = FastAPI()</code>. So it must be <code>"app:app"</code>. If you name it <code>"main:app"</code>, uvicorn looks for a file called <code>main.py</code>, can't find it, and crashes immediately.</p>
+
+<p><strong>Two solutions:</strong></p>
+<ul style="margin:0 0 16px 20px;color:var(--ink2);font-weight:300">
+  <li style="margin-bottom:8px">Change CMD to <code>"app:app"</code> (recommended — no file rename needed)</li>
+  <li style="margin-bottom:8px">Rename your file from <code>app.py</code> to <code>main.py</code> and keep CMD as <code>"main:app"</code></li>
+</ul>
+
+<!-- ======================== SECTION 9 ======================== -->
+<h2 id="cheatsheet"><span class="num">09</span> Command Cheat Sheet</h2>
+
+<h3>SSH Commands</h3>
+<pre><code><span class="cm"># Connect to server</span>
+<span class="cn">ssh</span> <span class="ca">-i</span> fastapi-key.pem ubuntu@YOUR_IP
+
+<span class="cm"># Disconnect from server</span>
+<span class="cn">exit</span>
+
+<span class="cm"># Copy files TO server</span>
+<span class="cn">scp</span> <span class="ca">-i</span> fastapi-key.pem <span class="ca">-r</span> ./my-folder ubuntu@YOUR_IP:/home/ubuntu/
+
+<span class="cm"># Copy files FROM server to local</span>
+<span class="cn">scp</span> <span class="ca">-i</span> fastapi-key.pem ubuntu@YOUR_IP:/home/ubuntu/app/app.db ./local-backup/</code></pre>
+
+<h3>Docker Commands</h3>
+<pre><code><span class="cm"># Build image from Dockerfile in current folder</span>
+<span class="cn">docker build</span> <span class="ca">-t</span> fastapi-app .
+
+<span class="cm"># Run container (detached, named, port-mapped, auto-restart)</span>
+<span class="cn">docker run</span> <span class="ca">-d</span> <span class="ca">--name</span> fastapi-container <span class="ca">-p</span> 8000:8000 <span class="ca">--restart always</span> fastapi-app
+
+<span class="cm"># See running containers</span>
+<span class="cn">docker ps</span>
+
+<span class="cm"># See ALL containers (including stopped)</span>
+<span class="cn">docker ps</span> <span class="ca">-a</span>
+
+<span class="cm"># View live logs</span>
+<span class="cn">docker logs</span> <span class="ca">-f</span> fastapi-container
+
+<span class="cm"># Stop container</span>
+<span class="cn">docker stop</span> fastapi-container
+
+<span class="cm"># Start stopped container</span>
+<span class="cn">docker start</span> fastapi-container
+
+<span class="cm"># Restart container</span>
+<span class="cn">docker restart</span> fastapi-container
+
+<span class="cm"># Delete container (must stop first)</span>
+<span class="cn">docker stop</span> fastapi-container <span class="ca">&&</span> <span class="cn">docker rm</span> fastapi-container
+
+<span class="cm"># Redeploy after code changes:</span>
+<span class="cn">docker stop</span> fastapi-container
+<span class="cn">docker rm</span> fastapi-container
+<span class="cn">docker build</span> <span class="ca">-t</span> fastapi-app .
+<span class="cn">docker run</span> <span class="ca">-d</span> <span class="ca">--name</span> fastapi-container <span class="ca">-p</span> 8000:8000 <span class="ca">--restart always</span> fastapi-app
+
+<span class="cm"># Get a bash shell INSIDE a running container (for debugging)</span>
+<span class="cn">docker exec</span> <span class="ca">-it</span> fastapi-container bash</code></pre>
+
+<h3>Linux Commands You'll Use Often</h3>
+<pre><code><span class="cm"># Check disk space</span>
+<span class="cn">df</span> <span class="ca">-h</span>
+
+<span class="cm"># Check RAM usage</span>
+<span class="cn">free</span> <span class="ca">-h</span>
+
+<span class="cm"># Check what's running on a port (e.g. port 8000)</span>
+<span class="cn">sudo lsof</span> <span class="ca">-i</span> :8000
+
+<span class="cm"># See all running processes</span>
+<span class="cn">ps aux</span>
+
+<span class="cm"># See real-time CPU/RAM usage</span>
+<span class="cn">htop</span>   <span class="cm">(install with: sudo apt install htop)</span>
+
+<span class="cm"># Edit a file</span>
+<span class="cn">nano</span> filename.txt   <span class="cm"># Ctrl+X to exit, Y to save</span>
+
+<span class="cm"># See file contents</span>
+<span class="cn">cat</span> filename.txt
+
+<span class="cm"># List files in current folder (with details)</span>
+<span class="cn">ls</span> <span class="ca">-la</span></code></pre>
+
+<div class="divider"></div>
+<p style="text-align:center;font-size:0.88rem;color:var(--ink3);font-family:var(--mono)">
+  AWS EC2 Complete Notes &nbsp;•&nbsp; FastAPI Deployment Guide &nbsp;•&nbsp; Beginner to Deployed
+</p>
+
+</body>
+</html>

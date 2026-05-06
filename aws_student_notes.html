@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Cloud Computing — Student Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --cream: #faf7f2;
+  --paper: #ffffff;
+  --ink: #1a1814;
+  --ink2: #3d3a34;
+  --muted: #8a8479;
+  --border: #e4dfd6;
+  --accent: #d4501a;
+  --accent2: #1a6dd4;
+  --accent3: #1a8c4e;
+  --accent4: #8c1ad4;
+  --yellow-bg: #fff8e6;
+  --yellow-bd: #f0c040;
+  --blue-bg: #e8f0fc;
+  --blue-bd: #90b8f0;
+  --green-bg: #e8f6ed;
+  --green-bd: #80c8a0;
+  --red-bg: #fdf0ee;
+  --red-bd: #e8a090;
+  --code-bg: #f5f0e8;
+  --code-border: #ddd8cc;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+/* ── COVER ── */
+.cover {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 64px 48px 56px;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(212,80,26,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(26,109,212,0.14) 0%, transparent 50%);
+}
+.cover-inner { position: relative; max-width: 860px; margin: 0 auto; }
+.course-tag {
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 24px;
+}
+.cover h1 {
+  font-family: 'Lora', serif;
+  font-weight: 700;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.cover h1 em { color: var(--accent); font-style: normal; }
+.cover-desc {
+  font-size: 15px;
+  color: rgba(255,255,255,0.55);
+  max-width: 500px;
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+.cover-modules {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cover-module {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+}
+.cover-module span { color: var(--accent); margin-right: 6px; }
+
+/* ── NAV ── */
+.nav {
+  background: var(--paper);
+  border-bottom: 2px solid var(--ink);
+  padding: 0 48px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  overflow-x: auto;
+}
+.nav-inner {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.nav a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.nav a .n { color: var(--accent); }
+
+/* ── LAYOUT ── */
+.page { max-width: 860px; margin: 0 auto; padding: 0 48px 80px; }
+
+/* ── CHAPTER ── */
+.chapter {
+  padding-top: 64px;
+  border-top: 2px solid var(--ink);
+  margin-top: 64px;
+}
+.chapter:first-child { margin-top: 0; border-top: none; }
+
+.ch-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.chapter h2 {
+  font-family: 'Lora', serif;
+  font-weight: 700;
+  font-size: clamp(22px, 3vw, 34px);
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.chapter-intro {
+  font-size: 15px;
+  color: var(--muted);
+  border-left: 3px solid var(--border);
+  padding-left: 16px;
+  margin-bottom: 32px;
+  line-height: 1.7;
+}
+
+/* ── HEADINGS ── */
+h3 {
+  font-family: 'Lora', serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--ink);
+  margin: 36px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+h4 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin: 24px 0 8px;
+}
+
+p { margin-bottom: 14px; color: var(--ink2); }
+strong { font-weight: 600; color: var(--ink); }
+
+/* ── INLINE CODE ── */
+code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12.5px;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--accent);
+}
+
+/* ── CODE BLOCKS ── */
+.code-wrap { margin: 16px 0; }
+.code-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ink);
+  color: rgba(255,255,255,0.4);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 8px 16px;
+  border-radius: 8px 8px 0 0;
+}
+.code-title .dots { display: flex; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dr { background: #ff5f57; } .dy { background: #febc2e; } .dg { background: #28c840; }
+pre {
+  background: #1e1b16;
+  border-radius: 0 0 8px 8px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  line-height: 1.75;
+  margin: 0;
+  color: #c9c0b0;
+}
+.code-wrap.standalone pre { border-radius: 8px; }
+
+/* syntax */
+.kw  { color: #e06c75; }
+.fn  { color: #c3a6ff; }
+.str { color: #98c379; }
+.cm  { color: #5c6370; font-style: italic; }
+.num { color: #d19a66; }
+.dec { color: #e5c07b; }
+.var { color: #61afef; }
+.op  { color: #56b6c2; }
+
+/* ── CALLOUTS ── */
+.callout {
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  display: flex;
+  gap: 14px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.callout-body { flex: 1; }
+.callout-body strong { display: block; margin-bottom: 4px; font-size: 13px; }
+.callout-icon { font-size: 20px; flex-shrink: 0; }
+.note  { background: var(--blue-bg);   border: 1px solid var(--blue-bd); }
+.tip   { background: var(--green-bg);  border: 1px solid var(--green-bd); }
+.warn  { background: var(--yellow-bg); border: 1px solid var(--yellow-bd); }
+.danger{ background: var(--red-bg);    border: 1px solid var(--red-bd); }
+.note  .callout-body strong { color: var(--accent2); }
+.tip   .callout-body strong { color: var(--accent3); }
+.warn  .callout-body strong { color: #b07800; }
+.danger .callout-body strong { color: var(--accent); }
+
+/* ── CARDS ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.card {
+  background: var(--paper);
+  padding: 22px;
+}
+.card-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.card-label.iaas { color: var(--accent2); }
+.card-label.paas { color: var(--accent4); }
+.card-label.saas { color: var(--accent3); }
+.card h4 { margin: 0 0 8px; font-size: 13px; color: var(--ink); text-transform: none; letter-spacing: 0; }
+.card p { font-size: 13px; color: var(--ink2); margin-bottom: 10px; }
+.card .ex { font-size: 12px; color: var(--muted); font-style: italic; }
+
+/* ── RESPONSIBILITY TABLE ── */
+.resp-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.resp-table th {
+  padding: 10px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: rgba(255,255,255,0.6);
+  border: 1px solid var(--ink);
+}
+.resp-table td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.resp-table td:first-child { text-align: left; font-weight: 500; color: var(--ink); background: var(--cream); }
+.you  { background: #e8f6ed; color: var(--accent3); font-weight: 500; }
+.aws  { background: var(--blue-bg); color: var(--accent2); font-weight: 500; }
+
+/* ── STEPS ── */
+.steps { margin: 20px 0; }
+.step {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 18px;
+  align-items: flex-start;
+}
+.step-num {
+  width: 30px; height: 30px;
+  background: var(--ink);
+  color: var(--cream);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-body { flex: 1; }
+.step-body b { color: var(--ink); font-weight: 600; }
+.step-body p { margin-bottom: 6px; }
+
+/* ── PORT TABLE ── */
+table {
+  width: 100%; border-collapse: collapse; margin: 16px 0;
+  font-size: 13px;
+}
+th {
+  background: var(--cream); border: 1px solid var(--border);
+  padding: 10px 14px; text-align: left;
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+}
+td {
+  padding: 10px 14px; border: 1px solid var(--border);
+  color: var(--ink2); vertical-align: top;
+}
+tr:nth-child(even) td { background: #faf8f4; }
+
+/* ── ARCH DIAGRAM ── */
+.arch {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px;
+  margin: 20px 0;
+  text-align: center;
+}
+.arch-row { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; margin: 8px 0; }
+.arch-box {
+  padding: 10px 18px; border-radius: 8px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  border: 1.5px solid; line-height: 1.4;
+}
+.ab-blue   { border-color: var(--blue-bd); background: var(--blue-bg); color: var(--accent2); }
+.ab-orange { border-color: var(--red-bd); background: var(--red-bg); color: var(--accent); }
+.ab-green  { border-color: var(--green-bd); background: var(--green-bg); color: var(--accent3); }
+.ab-purple { border-color: #d4b8f8; background: #f3eeff; color: var(--accent4); }
+.ab-yellow { border-color: var(--yellow-bd); background: var(--yellow-bg); color: #8a5c00; }
+.ab-gray   { border-color: var(--border); background: var(--cream); color: var(--ink); }
+.arr { color: var(--muted); font-size: 22px; margin: 0 10px; }
+.arch-label { font-size: 12px; color: var(--muted); margin-top: 14px; font-family: 'IBM Plex Mono', monospace; }
+
+/* ── AZ DIAGRAM ── */
+.region-box {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.region-title {
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  color: var(--accent2); margin-bottom: 14px; font-weight: 500;
+}
+.az-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+.az-box {
+  flex: 1; min-width: 120px;
+  border: 1.5px solid var(--blue-bd);
+  border-radius: 8px;
+  background: var(--blue-bg);
+  padding: 14px;
+}
+.az-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent2); margin-bottom: 8px; font-weight: 500; }
+.dc-chip {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: 4px; padding: 4px 8px;
+  font-size: 11px; color: var(--ink2);
+  margin-bottom: 4px; display: block;
+}
+
+/* ── QUICK REF ── */
+.qr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+@media (max-width: 640px) { .qr-grid { grid-template-columns: 1fr; } }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 20px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+}
+.b-orange { background: var(--red-bg); color: var(--accent); border: 1px solid var(--red-bd); }
+.b-blue   { background: var(--blue-bg); color: var(--accent2); border: 1px solid var(--blue-bd); }
+.b-green  { background: var(--green-bg); color: var(--accent3); border: 1px solid var(--green-bd); }
+
+ul { padding-left: 20px; margin-bottom: 14px; }
+ul li { margin-bottom: 7px; color: var(--ink2); }
+ul li::marker { color: var(--accent); }
+
+@media (max-width: 640px) {
+  .cover, .page { padding-left: 20px; padding-right: 20px; }
+  .nav { padding: 0 20px; }
+  .card-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="course-tag">Cloud Computing · AWS</div>
+    <h1>From Zero to<br><em>Deployed</em> on AWS</h1>
+    <p class="cover-desc">Everything you need to understand cloud computing, launch servers, write Python APIs, and deploy them — explained from scratch.</p>
+    <div class="cover-modules">
+      <div class="cover-module"><span>01</span> Cloud Models</div>
+      <div class="cover-module"><span>02</span> Regions & AZs</div>
+      <div class="cover-module"><span>03</span> EC2 + SSH</div>
+      <div class="cover-module"><span>04</span> Python on EC2</div>
+      <div class="cover-module"><span>05</span> Elastic Beanstalk</div>
+      <div class="cover-module"><span>06</span> Lambda + API Gateway</div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#ch1"><span class="n">01 </span>Cloud Models</a>
+    <a href="#ch2"><span class="n">02 </span>Regions</a>
+    <a href="#ch3"><span class="n">03 </span>EC2 + SSH</a>
+    <a href="#ch4"><span class="n">04 </span>Python App</a>
+    <a href="#ch5"><span class="n">05 </span>Beanstalk</a>
+    <a href="#ch6"><span class="n">06 </span>Serverless</a>
+    <a href="#ref"><span class="n">⌘  </span>Cheat Sheet</a>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- ═══ CH 1 ═══ -->
+<section class="chapter" id="ch1">
+  <div class="ch-label">Chapter 01</div>
+  <h2>IaaS, PaaS, and SaaS — Understanding Cloud Models</h2>
+  <p class="chapter-intro">Before writing a single line of code on AWS, you need to understand <em>what</em> cloud computing actually is and the three ways companies sell it to you.</p>
+
+  <h3>What is Cloud Computing?</h3>
+  <p>Cloud computing means <strong>renting computing resources over the internet</strong> instead of owning physical hardware. Instead of buying a server and putting it in a room, you rent one from AWS and pay only while you use it.</p>
+
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div class="callout-body">
+      <strong>Real-World Analogy</strong>
+      Think about electricity. You don't build your own power plant to charge your phone — you just plug into the grid and pay per unit. Cloud computing is the same idea: plug into AWS's massive infrastructure, use what you need, pay for what you consume.
+    </div>
+  </div>
+
+  <p>The key benefits are: <strong>no upfront cost</strong> (you don't buy hardware), <strong>scale on demand</strong> (add more capacity in seconds), and <strong>pay-as-you-go</strong> pricing.</p>
+
+  <h3>The Three Cloud Service Models</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-label iaas">IaaS</div>
+      <h4>Infrastructure as a Service</h4>
+      <p>AWS gives you the raw virtual hardware — a computer, storage, and a network connection. You install the OS, the software, and manage everything yourself.</p>
+      <p class="ex">🔧 AWS Examples: EC2, S3, VPC</p>
+      <p class="ex">👤 Used by: DevOps engineers, system admins</p>
+    </div>
+    <div class="card">
+      <div class="card-label paas">PaaS</div>
+      <h4>Platform as a Service</h4>
+      <p>AWS manages the OS and runtime for you. You just upload your code and it runs. You don't worry about patching servers or installing Python.</p>
+      <p class="ex">🔧 AWS Examples: Elastic Beanstalk, RDS</p>
+      <p class="ex">👤 Used by: Developers, small teams</p>
+    </div>
+    <div class="card">
+      <div class="card-label saas">SaaS</div>
+      <h4>Software as a Service</h4>
+      <p>A complete product delivered over the internet. You don't deploy anything — just sign up and use it. AWS builds the whole thing for you.</p>
+      <p class="ex">🔧 Examples: Gmail, Dropbox, Zoom</p>
+      <p class="ex">👤 Used by: Everyone — end users</p>
+    </div>
+  </div>
+
+  <h3>Who Manages What? (The Shared Responsibility Model)</h3>
+  <p>This table shows the crucial difference — as you move from IaaS → PaaS → SaaS, AWS takes on more responsibilities and you manage less:</p>
+
+  <table class="resp-table">
+    <thead><tr><th>Layer</th><th>IaaS (EC2)</th><th>PaaS (Beanstalk)</th><th>SaaS</th></tr></thead>
+    <tbody>
+      <tr><td>Your Application & Data</td><td class="you">You</td><td class="you">You</td><td class="aws">AWS</td></tr>
+      <tr><td>Runtime (Python, Node)</td><td class="you">You</td><td class="aws">AWS</td><td class="aws">AWS</td></tr>
+      <tr><td>Operating System</td><td class="you">You</td><td class="aws">AWS</td><td class="aws">AWS</td></tr>
+      <tr><td>Physical Servers</td><td class="aws">AWS</td><td class="aws">AWS</td><td class="aws">AWS</td></tr>
+      <tr><td>Network / Datacenter</td><td class="aws">AWS</td><td class="aws">AWS</td><td class="aws">AWS</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="callout-icon">✅</span>
+    <div class="callout-body">
+      <strong>Remember This</strong>
+      IaaS = Most control, most work. SaaS = Least control, least work. In this course we work with IaaS (EC2) and PaaS (Elastic Beanstalk). By the end you'll understand <em>why</em> you'd choose one over the other.
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CH 2 ═══ -->
+<section class="chapter" id="ch2">
+  <div class="ch-label">Chapter 02</div>
+  <h2>AWS Regions &amp; Availability Zones</h2>
+  <p class="chapter-intro">AWS doesn't run from one giant building. It's spread across the globe in carefully designed locations — and understanding this structure is essential for building reliable apps.</p>
+
+  <h3>Regions</h3>
+  <p>A <strong>Region</strong> is a specific geographic location where AWS operates data centers — like Mumbai, Virginia, or Ireland. Each region is completely independent. Data in Mumbai doesn't automatically go to Virginia.</p>
+
+  <table>
+    <thead><tr><th>Region Code</th><th>Location</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>us-east-1</code></td><td>N. Virginia, USA</td><td>Default for most tutorials; often cheapest</td></tr>
+      <tr><td><code>ap-south-1</code></td><td>Mumbai, India 🇮🇳</td><td>Best choice for Indian users — lowest latency</td></tr>
+      <tr><td><code>eu-west-1</code></td><td>Ireland, EU</td><td>Required for GDPR-compliant EU data</td></tr>
+      <tr><td><code>ap-southeast-1</code></td><td>Singapore</td><td>Good for Southeast Asian users</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Availability Zones (AZs)</h3>
+  <p>Each Region is divided into <strong>Availability Zones</strong>. An AZ is one or more physical data centers, each with its own power supply, cooling, and internet connection. They are physically separated but connected by very fast, private fiber cables.</p>
+
+  <div class="region-box">
+    <div class="region-title">📍 Region: ap-south-1 (Mumbai)</div>
+    <div class="az-grid">
+      <div class="az-box">
+        <div class="az-title">ap-south-1a</div>
+        <span class="dc-chip">🏢 Data Center 1</span>
+        <span class="dc-chip">🏢 Data Center 2</span>
+      </div>
+      <div class="az-box">
+        <div class="az-title">ap-south-1b</div>
+        <span class="dc-chip">🏢 Data Center 3</span>
+      </div>
+      <div class="az-box">
+        <div class="az-title">ap-south-1c</div>
+        <span class="dc-chip">🏢 Data Center 4</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Why Does This Matter?</h3>
+  <ul>
+    <li><strong>Latency:</strong> Deploy in the region closest to your users. Mumbai for India, Virginia for US East Coast.</li>
+    <li><strong>High Availability:</strong> Deploy your app across 2+ AZs. If one data center catches fire, the other AZs keep serving users. This is called <em>fault tolerance</em>.</li>
+    <li><strong>Data Residency:</strong> Some laws (like GDPR in Europe) require user data to stay in a specific country. Regions enforce this.</li>
+    <li><strong>Cost:</strong> The same EC2 instance type can cost slightly different amounts in different regions.</li>
+  </ul>
+
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-body">
+      <strong>Common Mistake</strong>
+      Always check which region you're in on the AWS Console (top-right corner). Resources are region-specific — an EC2 instance you launch in Mumbai won't show up if you switch to the Virginia region view.
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CH 3 ═══ -->
+<section class="chapter" id="ch3">
+  <div class="ch-label">Chapter 03</div>
+  <h2>Launching EC2, SSH Access &amp; Security Groups</h2>
+  <p class="chapter-intro">EC2 (Elastic Compute Cloud) is the heart of AWS. It's a virtual machine you rent by the hour. Let's launch one and connect to it.</p>
+
+  <h3>What is an EC2 Instance?</h3>
+  <p>An EC2 instance is simply a <strong>virtual computer running in AWS's data center</strong>. It has a CPU, RAM, storage, and a network connection. You choose the specifications and you're billed per hour (or per second for Linux).</p>
+
+  <h4>Instance Types — Naming Convention</h4>
+  <p>EC2 types follow a pattern: <code>family</code> + <code>generation</code> + <code>size</code>. For example, <code>t2.micro</code> means:</p>
+  <ul>
+    <li><strong>t</strong> = "burstable" family (general purpose, cheap)</li>
+    <li><strong>2</strong> = 2nd generation</li>
+    <li><strong>micro</strong> = smallest size (1 vCPU, 1 GB RAM)</li>
+  </ul>
+  <p>For this course, always use <code>t2.micro</code> — it's free-tier eligible (750 hours/month free for new accounts).</p>
+
+  <h3>Step-by-Step: Launch Your First EC2</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body"><p><b>Open EC2 Dashboard:</b> AWS Console → Services → EC2 → Click <em>"Launch Instance"</em></p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body"><p><b>Name it:</b> Give your instance a name like <code>my-web-server</code></p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <p><b>Choose an AMI (Amazon Machine Image):</b> This is your operating system. Choose <code>Ubuntu Server 22.04 LTS</code>. An AMI is like a snapshot of an OS — a ready-to-boot system image.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body"><p><b>Choose Instance Type:</b> Select <code>t2.micro</code> (look for the "Free tier eligible" label)</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <p><b>Create a Key Pair:</b> This is your SSH password, but in the form of a file. Click "Create new key pair", name it <code>my-key</code>, choose RSA + .pem format, and download it. <strong>Save this file safely — you cannot download it again.</strong></p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body"><p><b>Configure Security Group:</b> Under "Network Settings", allow SSH (port 22). We'll add more ports later.</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-body"><p><b>Launch:</b> Click "Launch Instance". After ~60 seconds it will be running. Copy the <em>Public IPv4 address</em> from the instance details.</p></div>
+    </div>
+  </div>
+
+  <h3>Security Groups — Your Cloud Firewall</h3>
+  <p>A Security Group is a <strong>set of firewall rules</strong> that controls which network traffic is allowed into (and out of) your EC2 instance. Think of it as a bouncer at the door — only traffic that matches a rule gets in.</p>
+
+  <div class="callout danger">
+    <span class="callout-icon">🔒</span>
+    <div class="callout-body">
+      <strong>Security Rule #1 — Never Expose SSH to the World</strong>
+      Setting SSH (port 22) source to <code>0.0.0.0/0</code> means <em>anyone on earth</em> can try to log in. Always restrict SSH to <code>My IP</code> (AWS fills your IP automatically) or a specific IP range.
+    </div>
+  </div>
+
+  <h4>Common Ports to Know</h4>
+  <table>
+    <thead><tr><th>Port</th><th>Protocol</th><th>Service</th><th>When to Open It</th></tr></thead>
+    <tbody>
+      <tr><td><code>22</code></td><td>TCP</td><td>SSH</td><td>For terminal access — restrict to your IP only</td></tr>
+      <tr><td><code>80</code></td><td>TCP</td><td>HTTP</td><td>Public web traffic — allow <code>0.0.0.0/0</code></td></tr>
+      <tr><td><code>443</code></td><td>TCP</td><td>HTTPS</td><td>Secure web traffic — allow <code>0.0.0.0/0</code></td></tr>
+      <tr><td><code>8000</code></td><td>TCP</td><td>FastAPI / Django</td><td>During development only</td></tr>
+      <tr><td><code>5432</code></td><td>TCP</td><td>PostgreSQL</td><td>Only from your app server — never the internet</td></tr>
+    </tbody>
+  </table>
+
+  <h3>SSH — Connecting via Terminal</h3>
+  <p>SSH (Secure Shell) lets you open a terminal <em>inside</em> your EC2 instance from your laptop, as if you were physically sitting in front of that server.</p>
+
+  <h4>Mac / Linux — Fix key permissions first</h4>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>Terminal</span></div>
+    <pre><span class="cm"># The key file must not be readable by other users on your machine</span>
+chmod 400 ~/Downloads/my-key.pem</pre>
+  </div>
+
+  <h4>Connect to your instance</h4>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>Terminal</span></div>
+    <pre><span class="cm"># Command format:
+# ssh -i &lt;your-key-file&gt; &lt;username&gt;@&lt;public-ip&gt;</span>
+
+<span class="cm"># For Ubuntu AMI (most common):</span>
+ssh -i ~/Downloads/my-key.pem ubuntu@<span class="num">3.109.45.210</span>
+
+<span class="cm"># For Amazon Linux 2023:</span>
+ssh -i ~/Downloads/my-key.pem ec2-user@<span class="num">3.109.45.210</span></pre>
+  </div>
+
+  <div class="callout note">
+    <span class="callout-icon">🪟</span>
+    <div class="callout-body">
+      <strong>Windows Users</strong>
+      Use <strong>Windows Subsystem for Linux (WSL)</strong> — open it from the Start menu and the commands above work exactly the same. Alternatively, use Git Bash or MobaXterm. Modern Windows 11 also supports the <code>ssh</code> command directly in PowerShell.
+    </div>
+  </div>
+
+  <h4>First thing to do after logging in</h4>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>EC2 Terminal (Ubuntu)</span></div>
+    <pre><span class="cm"># Update the package list and upgrade installed software</span>
+sudo apt update && sudo apt upgrade -y
+
+<span class="cm"># Check Python — Ubuntu 22.04 comes with Python 3.10+</span>
+python3 --version
+
+<span class="cm"># Install pip (Python package manager)</span>
+sudo apt install python3-pip python3-venv -y
+
+<span class="cm"># Exit the SSH session when done</span>
+exit</pre>
+  </div>
+</section>
+
+<!-- ═══ CH 4 ═══ -->
+<section class="chapter" id="ch4">
+  <div class="ch-label">Chapter 04</div>
+  <h2>Deploying a Python App on EC2</h2>
+  <p class="chapter-intro">Now that you can SSH into an EC2 instance, let's put a real Python web API on it and make it accessible from the internet.</p>
+
+  <h3>What We're Building</h3>
+  <p>A <strong>FastAPI</strong> application — a modern Python web framework that's fast, easy to use, and automatically generates API documentation. We'll deploy it on EC2 and access it from a browser.</p>
+
+  <h3>Step 1 — Set Up the Environment on EC2</h3>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>EC2 Terminal</span></div>
+    <pre><span class="cm"># Create project directory</span>
+mkdir ~/myapp
+cd ~/myapp
+
+<span class="cm"># Create a virtual environment
+# (keeps your project's packages separate from the system)</span>
+python3 -m venv venv
+
+<span class="cm"># Activate the virtual environment</span>
+source venv/bin/activate
+<span class="cm"># Your prompt changes to: (venv) ubuntu@ip...</span>
+
+<span class="cm"># Install FastAPI and Uvicorn (the web server)</span>
+pip install fastapi uvicorn</pre>
+  </div>
+
+  <h3>Step 2 — Write the App</h3>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>main.py</span></div>
+    <pre><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+
+app = <span class="fn">FastAPI</span>()
+
+<span class="cm"># The "/" route — what you see when you visit http://your-ip:8000/</span>
+<span class="dec">@app.get</span>(<span class="str">"/"</span>)
+<span class="kw">def</span> <span class="fn">home</span>():
+    <span class="kw">return</span> {<span class="str">"message"</span>: <span class="str">"Hello from AWS EC2! 🚀"</span>}
+
+<span class="cm"># A route with a path parameter</span>
+<span class="dec">@app.get</span>(<span class="str">"/greet/{name}"</span>)
+<span class="kw">def</span> <span class="fn">greet</span>(name: <span class="var">str</span>):
+    <span class="kw">return</span> {<span class="str">"message"</span>: <span class="fn">f</span><span class="str">f"Hello, {name}!"</span>}
+
+<span class="cm"># Health check endpoint — used by load balancers</span>
+<span class="dec">@app.get</span>(<span class="str">"/health"</span>)
+<span class="kw">def</span> <span class="fn">health</span>():
+    <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"ok"</span>}</pre>
+  </div>
+
+  <p>Create this file on EC2 using the nano editor: type <code>nano main.py</code>, paste the code, then press <code>Ctrl+X</code> → <code>Y</code> → <code>Enter</code> to save.</p>
+
+  <h3>Step 3 — Run the App</h3>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>EC2 Terminal</span></div>
+    <pre><span class="cm"># --host 0.0.0.0 means "accept connections from any IP"
+# Without this, only localhost (the server itself) can connect
+# --reload auto-restarts when code changes (for development)</span>
+uvicorn main:app --host <span class="num">0.0.0.0</span> --port <span class="num">8000</span> --reload</pre>
+  </div>
+
+  <div class="callout note">
+    <span class="callout-icon">🌐</span>
+    <div class="callout-body">
+      <strong>Test it in your browser</strong>
+      Go to <code>http://&lt;YOUR-EC2-PUBLIC-IP&gt;:8000</code> — you should see the JSON response. Also try <code>/docs</code> — FastAPI auto-generates an interactive API documentation page!
+      <br><br>
+      Make sure port <code>8000</code> is open in the Security Group (add an inbound rule: Custom TCP, Port 8000, Source 0.0.0.0/0).
+    </div>
+  </div>
+
+  <h3>Step 4 — Keep it Running After You Disconnect</h3>
+  <p>When you close the SSH session, your process stops. Use <code>nohup</code> to keep it alive:</p>
+
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>EC2 Terminal</span></div>
+    <pre><span class="cm"># nohup = "no hang up" — keeps process running after logout
+# & = runs in background</span>
+nohup uvicorn main:app --host <span class="num">0.0.0.0</span> --port <span class="num">8000</span> &
+
+<span class="cm"># Check it's running</span>
+ps aux | grep uvicorn
+
+<span class="cm"># Stop it later</span>
+pkill -f uvicorn</pre>
+  </div>
+
+  <h3>Bonus — Copy Files from Your Laptop to EC2 (SCP)</h3>
+  <p>You don't have to write code directly on EC2. Write it on your laptop and use <code>scp</code> (Secure Copy) to transfer it:</p>
+
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>Your Laptop Terminal</span></div>
+    <pre><span class="cm"># Copy one file</span>
+scp -i my-key.pem main.py ubuntu@<span class="num">3.109.45.210</span>:~/myapp/
+
+<span class="cm"># Copy an entire folder (-r for recursive)</span>
+scp -i my-key.pem -r ./myapp/ ubuntu@<span class="num">3.109.45.210</span>:~/</pre>
+  </div>
+</section>
+
+<!-- ═══ CH 5 ═══ -->
+<section class="chapter" id="ch5">
+  <div class="ch-label">Chapter 05</div>
+  <h2>Deploying FastAPI to Elastic Beanstalk</h2>
+  <p class="chapter-intro">Managing EC2 manually is fine for learning, but in production you want auto-scaling, health monitoring, and easy deployments. That's what Elastic Beanstalk gives you.</p>
+
+  <h3>What is Elastic Beanstalk?</h3>
+  <p>Elastic Beanstalk (EB) is AWS's <strong>Platform as a Service</strong>. You give it your code (as a ZIP file or via CLI), and it automatically:</p>
+  <ul>
+    <li>Launches EC2 instances</li>
+    <li>Sets up a Load Balancer to distribute traffic</li>
+    <li>Configures Auto Scaling (adds more servers when traffic spikes)</li>
+    <li>Monitors health and restarts crashed servers</li>
+  </ul>
+  <p>You just focus on writing your app.</p>
+
+  <div class="arch">
+    <div style="font-size:13px; color:var(--muted); margin-bottom:20px; font-family:'IBM Plex Mono',monospace;">How Elastic Beanstalk Works</div>
+    <div class="arch-row">
+      <div class="arch-box ab-blue">Your Code<br><span style="font-size:10px">.zip upload</span></div>
+      <span class="arr">→</span>
+      <div class="arch-box ab-purple">Elastic<br>Beanstalk</div>
+      <span class="arr">→</span>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="arch-box ab-green" style="font-size:11px">EC2 Instances</div>
+        <div class="arch-box ab-orange" style="font-size:11px">Load Balancer</div>
+        <div class="arch-box ab-yellow" style="font-size:11px">Auto Scaling Group</div>
+      </div>
+    </div>
+    <p class="arch-label">You manage your code. AWS manages the infrastructure.</p>
+  </div>
+
+  <h3>Required Project Structure</h3>
+  <p>Elastic Beanstalk expects a specific file name for Python: <strong>the main file must be called <code>application.py</code></strong> and the WSGI object inside it must also be called <code>application</code>.</p>
+
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>Project Structure</span></div>
+    <pre>my-fastapi-app/
+├── application.py       <span class="cm">← MUST be named this for Elastic Beanstalk</span>
+├── requirements.txt     <span class="cm">← list of all pip packages</span>
+└── .ebextensions/
+    └── python.config    <span class="cm">← tells EB how to start your app</span></pre>
+  </div>
+
+  <h4>application.py</h4>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>application.py</span></div>
+    <pre><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+
+<span class="cm"># ⚠️ The variable MUST be named 'application' — not 'app'
+# Elastic Beanstalk specifically looks for this name</span>
+application = <span class="fn">FastAPI</span>()
+
+<span class="dec">@application.get</span>(<span class="str">"/"</span>)
+<span class="kw">def</span> <span class="fn">root</span>():
+    <span class="kw">return</span> {<span class="str">"message"</span>: <span class="str">"FastAPI running on Elastic Beanstalk!"</span>}
+
+<span class="dec">@application.get</span>(<span class="str">"/health"</span>)
+<span class="kw">def</span> <span class="fn">health</span>():
+    <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"ok"</span>}</pre>
+  </div>
+
+  <h4>requirements.txt</h4>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>requirements.txt</span></div>
+    <pre>fastapi
+uvicorn[standard]</pre>
+  </div>
+
+  <h4>.ebextensions/python.config</h4>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>.ebextensions/python.config</span></div>
+    <pre>option_settings:
+  aws:elasticbeanstalk:container:python:
+    WSGIPath: application:application</pre>
+  </div>
+
+  <h3>Deploy with the EB CLI</h3>
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>Terminal (your laptop)</span></div>
+    <pre><span class="cm"># 1. Install the EB CLI</span>
+pip install awsebcli
+
+<span class="cm"># 2. Go to your project folder</span>
+cd my-fastapi-app
+
+<span class="cm"># 3. Initialize — follow the prompts:
+#    - Select region (ap-south-1 for Mumbai)
+#    - Create a new application
+#    - Select Python as the platform</span>
+eb init
+
+<span class="cm"># 4. Create an environment and deploy</span>
+eb create fastapi-prod-env
+
+<span class="cm"># 5. Open your deployed app in the browser</span>
+eb open
+
+<span class="cm"># 6. When you make code changes, just run:</span>
+eb deploy
+
+<span class="cm"># 7. Check logs if something breaks</span>
+eb logs
+
+<span class="cm"># ⚠️ IMPORTANT: When done, terminate to stop charges</span>
+eb terminate fastapi-prod-env</pre>
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-icon">💰</span>
+    <div class="callout-body">
+      <strong>Cost Warning — Always Terminate When Done</strong>
+      Elastic Beanstalk creates real EC2 instances and Load Balancers. These cost money per hour even when idle. Always run <code>eb terminate &lt;env-name&gt;</code> after practice sessions. Check AWS Billing dashboard regularly.
+    </div>
+  </div>
+
+  <h3>EC2 vs Elastic Beanstalk — When to Use Which</h3>
+  <table>
+    <thead><tr><th></th><th>Raw EC2</th><th>Elastic Beanstalk</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Setup effort</strong></td><td>High — manual configuration</td><td>Low — automated</td></tr>
+      <tr><td><strong>Control</strong></td><td>Full (root access to OS)</td><td>App-level only</td></tr>
+      <tr><td><strong>Scaling</strong></td><td>Manual or custom Auto Scaling</td><td>Built-in, automatic</td></tr>
+      <tr><td><strong>Best for</strong></td><td>Custom/legacy setups, learning</td><td>Standard web apps, APIs</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ CH 6 ═══ -->
+<section class="chapter" id="ch6">
+  <div class="ch-label">Chapter 06</div>
+  <h2>Serverless — AWS Lambda &amp; API Gateway</h2>
+  <p class="chapter-intro">Serverless is the next evolution. No servers to manage, no idle costs, infinite automatic scaling. Here's how it works and how to build with it.</p>
+
+  <h3>What is "Serverless"?</h3>
+  <p>The name is misleading — there <em>are</em> servers, but <strong>you never see, manage, or pay for them when idle</strong>. You write a function, upload it, and AWS runs it whenever needed. You pay only for the exact milliseconds it runs.</p>
+
+  <table>
+    <thead><tr><th></th><th>Traditional Server (EC2)</th><th>Serverless (Lambda)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Running</strong></td><td>24/7, even with 0 traffic</td><td>Only when triggered</td></tr>
+      <tr><td><strong>Billing</strong></td><td>Per hour of uptime</td><td>Per millisecond of execution</td></tr>
+      <tr><td><strong>Scaling</strong></td><td>Manual or configured Auto Scaling</td><td>Automatic — 0 to 1 million instantly</td></tr>
+      <tr><td><strong>Maintenance</strong></td><td>You patch OS, update software</td><td>None — AWS handles everything</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div class="callout-body">
+      <strong>Real World Example</strong>
+      Imagine you're building a "resize uploaded image" feature. With EC2: a server runs 24/7 waiting for uploads. With Lambda: a function fires only when an image is uploaded, resizes it in 200ms, and you pay for those 200ms. If nobody uploads all night, you pay $0.
+    </div>
+  </div>
+
+  <h3>AWS Lambda — Core Concepts</h3>
+  <ul>
+    <li>A <strong>Lambda Function</strong> = a single function AWS runs on your behalf</li>
+    <li>Supports Python, Node.js, Java, Go, Ruby</li>
+    <li>Max runtime: <strong>15 minutes</strong> per call</li>
+    <li>Free tier: <strong>1 million free requests/month</strong> (stays free forever)</li>
+    <li>Triggered by events: HTTP requests, file uploads, scheduled timers, database changes, etc.</li>
+  </ul>
+
+  <h3>Your First Lambda Function — The Handler</h3>
+  <p>Every Lambda function needs a <strong>handler</strong> — the entry point that AWS calls. It receives two parameters: <code>event</code> (the incoming data) and <code>context</code> (runtime metadata).</p>
+
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>lambda_function.py</span></div>
+    <pre><span class="kw">import</span> json
+
+<span class="kw">def</span> <span class="fn">lambda_handler</span>(event, context):
+    <span class="cm">"""
+    event   → the incoming data (from API Gateway, S3, etc.)
+    context → runtime info (function name, remaining time, etc.)
+    """</span>
+
+    <span class="cm"># Get a query parameter called 'name' if provided</span>
+    params = event.get(<span class="str">'queryStringParameters'</span>) <span class="kw">or</span> {}
+    name = params.get(<span class="str">'name'</span>, <span class="str">'World'</span>)
+
+    <span class="cm"># Return value must follow this exact structure for API Gateway</span>
+    <span class="kw">return</span> {
+        <span class="str">'statusCode'</span>: <span class="num">200</span>,
+        <span class="str">'headers'</span>: {<span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>},
+        <span class="str">'body'</span>: json.<span class="fn">dumps</span>({
+            <span class="str">'message'</span>: <span class="fn">f</span><span class="str">f'Hello, {name}! Running on Lambda 🚀'</span>
+        })
+    }</pre>
+  </div>
+
+  <h3>Create a Lambda Function (Console)</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body"><p><b>AWS Console → Lambda → Create Function</b></p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body"><p><b>Choose "Author from scratch"</b> → Name it <code>my-hello-lambda</code> → Runtime: Python 3.12 → Click Create</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body"><p><b>Paste your code</b> in the inline editor → Click <strong>Deploy</strong></p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body"><p><b>Test it:</b> Click <em>Test</em> → Create a new test event → Click <em>Test</em> → See the response in the "Execution result" panel</p></div>
+    </div>
+  </div>
+
+  <h3>API Gateway — Give Your Lambda a URL</h3>
+  <p>Lambda has no public URL by default. <strong>API Gateway</strong> is a fully managed service that creates an HTTPS endpoint that triggers your Lambda function when someone makes an HTTP request to it.</p>
+
+  <div class="arch">
+    <div style="font-size:13px; color:var(--muted); margin-bottom:20px; font-family:'IBM Plex Mono',monospace;">Request Flow: Internet → API Gateway → Lambda</div>
+    <div class="arch-row" style="flex-wrap:wrap; gap:0">
+      <div class="arch-box ab-blue">Browser / App<br><span style="font-size:10px">User makes request</span></div>
+      <span class="arr">→</span>
+      <div class="arch-box ab-yellow">API Gateway<br><span style="font-size:10px">HTTPS endpoint</span></div>
+      <span class="arr">→</span>
+      <div class="arch-box ab-orange">Lambda<br><span style="font-size:10px">Runs your code</span></div>
+      <span class="arr">→</span>
+      <div class="arch-box ab-green">JSON Response<br><span style="font-size:10px">Back to user</span></div>
+    </div>
+    <p class="arch-label">API Gateway handles SSL, rate limiting, and auth. Lambda handles your business logic.</p>
+  </div>
+
+  <h3>Connect API Gateway to Lambda</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body"><p><b>AWS Console → API Gateway → Create API</b> → Choose <strong>HTTP API</strong> (simpler, cheaper than REST API)</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body"><p><b>Add Integration:</b> Select Lambda → choose your <code>my-hello-lambda</code> function</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body"><p><b>Configure route:</b> Method = <code>GET</code>, Path = <code>/hello</code></p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body"><p><b>Deploy:</b> Stage = <code>$default</code> → AWS generates your public URL like <code>https://abc123.execute-api.ap-south-1.amazonaws.com/hello</code></p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body"><p><b>Test it!</b> Open the URL in your browser. Add <code>?name=YourName</code> to see the name parameter in action.</p></div>
+    </div>
+  </div>
+
+  <h3>Using External Libraries in Lambda</h3>
+  <p>Lambda doesn't have most PyPI packages pre-installed (except <code>boto3</code>, the AWS SDK). To use packages like <code>requests</code>, you need to bundle them with your code in a ZIP file.</p>
+
+  <div class="code-wrap">
+    <div class="code-title"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span>Terminal (your laptop)</span></div>
+    <pre><span class="cm"># Create a folder for the deployment package</span>
+mkdir lambda_pkg && cd lambda_pkg
+
+<span class="cm"># Install libraries INTO this folder (not system-wide)
+# -t . means "install here"</span>
+pip install requests -t .
+
+<span class="cm"># Copy your function code into the folder</span>
+cp ../lambda_function.py .
+
+<span class="cm"># Zip everything</span>
+zip -r deployment.zip .
+
+<span class="cm"># Upload via AWS CLI</span>
+aws lambda update-function-code \
+  --function-name my-hello-lambda \
+  --zip-file fileb://deployment.zip</pre>
+  </div>
+
+  <h3>Common Lambda Event Triggers</h3>
+  <p>Lambda can respond to many types of AWS events, not just HTTP requests:</p>
+
+  <table>
+    <thead><tr><th>Trigger</th><th>What Happens</th><th>Example Use Case</th></tr></thead>
+    <tbody>
+      <tr><td><strong>API Gateway</strong></td><td>HTTP request arrives</td><td>REST API, webhook</td></tr>
+      <tr><td><strong>S3 Event</strong></td><td>File uploaded to S3 bucket</td><td>Resize image, parse CSV</td></tr>
+      <tr><td><strong>CloudWatch Events</strong></td><td>Scheduled time trigger (like cron)</td><td>Daily report, cleanup job</td></tr>
+      <tr><td><strong>DynamoDB Stream</strong></td><td>Database row changes</td><td>Real-time sync, notifications</td></tr>
+      <tr><td><strong>SQS</strong></td><td>Message added to a queue</td><td>Process orders, send emails</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ CHEAT SHEET ═══ -->
+<section class="chapter" id="ref">
+  <div class="ch-label">Quick Reference</div>
+  <h2>Commands Cheat Sheet</h2>
+  <p class="chapter-intro">Everything you'll use regularly — in one place. Bookmark this section.</p>
+
+  <div class="qr-grid">
+    <div>
+      <h4>SSH & File Transfer</h4>
+      <div class="code-wrap standalone">
+        <pre>chmod 400 my-key.pem
+ssh -i my-key.pem ubuntu@&lt;ip&gt;
+scp -i my-key.pem file.py ubuntu@&lt;ip&gt;:~/
+scp -i my-key.pem -r folder/ ubuntu@&lt;ip&gt;:~/</pre>
+      </div>
+    </div>
+    <div>
+      <h4>EC2 Environment Setup</h4>
+      <div class="code-wrap standalone">
+        <pre>sudo apt update && sudo apt upgrade -y
+sudo apt install python3-pip python3-venv -y
+python3 -m venv venv
+source venv/bin/activate
+pip install fastapi uvicorn</pre>
+      </div>
+    </div>
+    <div>
+      <h4>Run FastAPI</h4>
+      <div class="code-wrap standalone">
+        <pre><span class="cm"># Development (with auto-reload)</span>
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+<span class="cm"># Background (keeps running after logout)</span>
+nohup uvicorn main:app --host 0.0.0.0 --port 8000 &
+
+<span class="cm"># Stop background process</span>
+pkill -f uvicorn</pre>
+      </div>
+    </div>
+    <div>
+      <h4>Elastic Beanstalk CLI</h4>
+      <div class="code-wrap standalone">
+        <pre>pip install awsebcli
+eb init               <span class="cm"># setup project</span>
+eb create &lt;env-name&gt;  <span class="cm"># first deploy</span>
+eb deploy             <span class="cm"># push updates</span>
+eb open               <span class="cm"># open in browser</span>
+eb logs               <span class="cm"># view logs</span>
+eb terminate &lt;env&gt;    <span class="cm"># stop charges ⚠️</span></pre>
+      </div>
+    </div>
+    <div>
+      <h4>AWS CLI — Lambda</h4>
+      <div class="code-wrap standalone">
+        <pre>aws configure            <span class="cm"># set credentials</span>
+aws lambda list-functions
+aws lambda invoke \
+  --function-name my-fn out.json
+aws lambda update-function-code \
+  --function-name my-fn \
+  --zip-file fileb://pkg.zip</pre>
+      </div>
+    </div>
+    <div>
+      <h4>Useful Linux Commands</h4>
+      <div class="code-wrap standalone">
+        <pre>pwd          <span class="cm"># where am I?</span>
+ls -la       <span class="cm"># list files with details</span>
+nano file.py <span class="cm"># edit file (Ctrl+X to exit)</span>
+ps aux       <span class="cm"># list running processes</span>
+df -h        <span class="cm"># disk space</span>
+free -h      <span class="cm"># RAM usage</span>
+sudo reboot  <span class="cm"># restart server</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>FastAPI URL Patterns</h3>
+  <table>
+    <thead><tr><th>URL</th><th>What you see</th></tr></thead>
+    <tbody>
+      <tr><td><code>http://&lt;ip&gt;:8000/</code></td><td>Root route response</td></tr>
+      <tr><td><code>http://&lt;ip&gt;:8000/docs</code></td><td>Auto-generated Swagger UI (interactive docs)</td></tr>
+      <tr><td><code>http://&lt;ip&gt;:8000/redoc</code></td><td>ReDoc-style documentation</td></tr>
+      <tr><td><code>http://&lt;ip&gt;:8000/health</code></td><td>Health check endpoint</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Choose the Right AWS Service</h3>
+  <table>
+    <thead><tr><th>Your Situation</th><th>Use This</th></tr></thead>
+    <tbody>
+      <tr><td>Learning, need full OS control, custom setup</td><td><span class="badge b-blue">EC2</span></td></tr>
+      <tr><td>Deploying a web app, want managed infra, auto-scaling</td><td><span class="badge b-orange">Elastic Beanstalk</span></td></tr>
+      <tr><td>Event-driven functions, sporadic traffic, zero idle cost</td><td><span class="badge b-green">Lambda</span></td></tr>
+      <tr><td>Need an HTTP endpoint for Lambda</td><td><span class="badge b-blue">API Gateway + Lambda</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+</div><!-- /page -->
+
+<footer style="background:var(--ink); color:rgba(255,255,255,0.3); text-align:center; padding:28px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; margin-top:40px;">
+  AWS CLOUD COMPUTING · STUDENT NOTES · SAVE THIS PAGE FOR REFERENCE
+</footer>
+
+</body>
+</html>
